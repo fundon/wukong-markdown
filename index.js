@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  *  Module dependencies.
  */
@@ -29,14 +31,12 @@ function markdown(options) {
       data = files[file];
       dir = dirname(file);
       name = basename(file, extname(file)) + '.html';
-      if ('.' != dir) name = dir + '/' + name;
+      if ('.' !== dir) name = dir + '/' + name;
 
-      debug('coverting file: %s', file)
+      debug('coverting file: %s', file);
       str = marked(data.contents.toString(), options);
       data.contents = new Buffer(str);
-      keys.forEach(function (key) {
-        data[key] = marked(data[key], options);
-      });
+      each(keys, data, options);
 
       out[name] = data;
     }
@@ -54,4 +54,11 @@ function markdown(options) {
 
 function isMkd(file) {
   return /\.md|\.markdown$/.test(extname(file));
+}
+
+function each(keys, data, options) {
+  function iteration(key) {
+    data[key] = marked(data[key], options);
+  }
+  return keys.forEach(iteration);
 }
