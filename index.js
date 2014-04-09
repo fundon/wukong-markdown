@@ -22,13 +22,13 @@ function markdown(options) {
   var keys = options.keys || [];
 
   return function *markdown(next) {
-    var files = this.input;
-    var out = this.output;
+    var files = this.files;
     var file, data, dir, name, str;
     for (file in files) {
       debug('checking file: %s', file);
       if (!isMkd(file)) continue;
       data = files[file];
+      delete files[file];
       dir = dirname(file);
       name = basename(file, extname(file)) + '.html';
       if ('.' !== dir) name = dir + '/' + name;
@@ -38,7 +38,7 @@ function markdown(options) {
       data.contents = new Buffer(str);
       each(keys, data, options);
 
-      out[name] = data;
+      files[name] = data;
     }
 
     yield next;
