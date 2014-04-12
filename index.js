@@ -22,24 +22,18 @@ function markdown(options) {
   var keys = options.keys || [];
 
   return function *markdown(next) {
-    var files = this.files;
-    var file, data, dir, name, str;
-    for (file in files) {
-      debug('checking file: %s', file);
-      if (!isMkd(file)) continue;
-      data = files[file];
-      delete files[file];
-      dir = dirname(file);
-      name = basename(file, extname(file)) + '.html';
-      if ('.' !== dir) name = dir + '/' + name;
-
-      debug('coverting file: %s', file);
-      str = marked(data.contents.toString(), options);
-      data.contents = new Buffer(str);
-      each(keys, data, options);
-
-      files[name] = data;
-    }
+    var file = this.file;
+    var name = file.name;
+    debug('checking file: %s', name);
+    if (!isMkd(name)) return;
+    var dir = dirname(name);
+    name = basename(name, extname(name)) + '.html';
+    if ('.' !== dir) name = dir + '/' + name;
+    debug('coverting file: %s', name);
+    var str = marked(file.contents.toString(), options);
+    file.contents = new Buffer(str);
+    each(keys, file, options);
+    file.name = name;
 
     yield next;
   };
@@ -56,9 +50,9 @@ function isMkd(file) {
   return /\.md|\.markdown$/.test(extname(file));
 }
 
-function each(keys, data, options) {
-  function iteration(key) {
-    data[key] = marked(data[key], options);
-  }
+function each(keys, file, options) {
   return keys.forEach(iteration);
+  function iteration(key) {
+    file[key] = marked(file[key], options);
+  }
 }
