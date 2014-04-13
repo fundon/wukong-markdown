@@ -23,7 +23,7 @@ function markdown(options) {
 
   return function *markdown(next) {
     var file = this.file;
-    var name = file.name;
+    var name = file.path;
     debug('checking file: %s', name);
     if (!isMkd(name)) return;
     var dir = dirname(name);
@@ -33,7 +33,7 @@ function markdown(options) {
     var str = marked(file.contents.toString(), options);
     file.contents = new Buffer(str);
     each(keys, file, options);
-    file.name = name;
+    file.path = name;
 
     yield next;
   };
