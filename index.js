@@ -25,14 +25,13 @@ function markdown(options) {
     var file = this.file;
     var name = file.path;
     debug('checking file: %s', name);
-    if (!isMkd(name)) return;
+    if (!isMkd(name)) return yield next;
     var dir = dirname(name);
     name = basename(name, extname(name)) + '.html';
     if ('.' !== dir) name = dir + '/' + name;
     debug('coverting file: %s', name);
-    var str = marked(file.contents.toString(), options);
-    file.contents = new Buffer(str);
     each(keys, file, options);
+    file.contents = marked(file.contents, options);
     file.path = name;
 
     yield next;

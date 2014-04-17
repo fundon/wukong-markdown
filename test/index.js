@@ -21,8 +21,8 @@ describe('wukong-markdown', function(){
         keys: ['custom'],
         smartypants: true
       }))
-      .build(function *(file) {
-        assert.equal('<p><em>a</em></p>\n', file.custom);
+      .build(function *(files) {
+        assert.equal('<p><em>a</em></p>\n', files[0].custom);
         done();
       });
   });
